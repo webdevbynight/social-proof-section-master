@@ -1,0 +1,21 @@
+@charset "utf-8";
+
+/**
+ * @site Frontend Mentor | Social proof section
+ * @author Victor Brito
+ * 
+ * Reset CSS inspired from Corinne Durrmeyer’s normalize.css
+ * @see https://github.com/inseo/bpi-normalize/blob/master/normalize.css
+ */
+
+@import 'base/default-config';
+@import 'base/functions';
+@import 'base/mixins';
+@import 'variables';
+@import 'config';
+@import 'base/reset';
+@import 'base/print';
+@import 'typo/font-face';
+@import 'typo/typo';
+@import 'layout/layout';
+@import 'contents/social-proof';

@@ -1,0 +1,52 @@
+@charset "utf-8";
+
+// Default configuration
+
+// Media queries
+
+/// Default breakpoints
+///
+/// @type Map
+$media-queries-breakpoints: (
+    mobile: 320,
+    tablet: 768,
+    desktop: 1024,
+    wide: 1480
+) !default;
+
+/// Default breakpoints to show for development and debugging purposes
+///
+/// @type List
+$show-media-queries-breakpoints: () !default;
+
+// Browser support
+
+/// Firefox minimal version with ensured compatibility
+///
+/// @type Number
+$firefox: 110 !default;
+
+/// Safari minimal version with ensured compatibility
+///
+/// @type Number
+$safari: 16.3 !default;
+
+/// Google Chrome minimal version with ensured compatibility
+///
+/// @type Number
+$chrome: 110 !default;
+
+/// Firefox Android minimal version with ensured compatibility
+///
+/// @type Number
+$firefox-android: 110 !default;
+
+/// Safari iOS minimal version with ensured compatibility
+///
+/// @type Number
+$safari-ios: 16.3 !default;
+
+/// Opera Mini minimal version with ensured compatibility
+///
+/// @type Number
+$opera-mini: 63 !default;

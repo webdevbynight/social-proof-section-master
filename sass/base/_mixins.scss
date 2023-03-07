@@ -1,0 +1,347 @@
+@charset "utf-8";
+
+// Mixins
+
+/// Mixin media queries
+///
+/// @param {String | List} $media-types [all] - Media types list (screen, print…)
+/// @param {String | Boolean} $from-breakpoint [false] - One of $media-queries-breakpoints
+/// @param {String | Boolean} $until-breakpoint [false] - One of $media-queries-breakpoints
+/// @param {String | Boolean} $fixed-breakpoint [false] - One of $media-queries-breakpoints
+/// @param {Map} $breakpoints [$media-queries-breakpoints] - Map of the breakpoints with their values in pixels (without any unit)
+/// @param {String | Boolean} $other-media-features [false] - Other media features ((orientation: landscape)…)
+/// @param {Boolean} $and [true] - Each media query is concatenated by the `and` keyword or comma-separated
+///
+/// @requires {Variable} $media-queries-breakpoints
+/// @requires {Function} px2em
+///
+/// @content The CSS rules
+///
+/// @example scss
+/// .element {
+///     @include css-media-queries ($from-breakpoint: 321) {
+///         color: red;
+///     }
+///     @include css-media-queries ($from-breakpoint: tablet) {
+///         color: pink;
+///     }
+///     @include css-media-queries ($until-breakpoint: mobile) {
+///         color: fuschia;
+///     }
+///     @include css-media-queries ($from-breakpoint: mobile, $until-breakpoint: tablet) {
+///         color: violet;
+///     }
+///     @include css-media-queries ($other-media-features: '(orientation: landscape)') {
+///         color: green;
+///     }
+///     @include css-media-queries ((screen print), $and: false) {
+///         color: black;
+///     }
+/// }
+@mixin css-media-queries (
+        $media-types: all,
+        $from-breakpoint: false,
+        $until-breakpoint: false,
+        $fixed-breakpoint: false,
+        $breakpoints: $media-queries-breakpoints,
+        $other-media-features: false,
+        $and: true
+    ) {
+    $media-queries: '';
+    $media-features: '';
+
+    // One or more media features are declared
+    // From breakpoint and until breakpoint are both declared
+    @if ($from-breakpoint and $until-breakpoint) {
+        // From breakpoint
+        @if type-of($from-breakpoint) == 'number' {
+            @if $safari <= 16.3 or $safari-ios <= 16.3 {
+                $media-features: $media-features + '(min-width: ' + px2em($from-breakpoint) + ')'; // Safari 16.3-, Safari iOS 16.3-
+            }
+            @else {
+                $media-features: $media-features + '(' + px2em($from-breakpoint) + ' <= ';
+            }
+        }
+        @else if map-has-key($breakpoints, $from-breakpoint) {
+            $value: map-get($breakpoints, $from-breakpoint);
+            @if type-of($value) == 'number' {
+                @if $safari <= 16.3 or $safari-ios <= 16.3 {
+                    $media-features: $media-features + '(min-width: ' + px2em($value) + ')'; // Safari 16.3-, Safari iOS 16.3-
+                }
+                @else {
+                    $media-features: $media-features + '(' + px2em($value) + ' <= ';
+                }
+            }
+            @else {
+                @warn 'The value of the breakpoint `#{$from-breakpoint}` is not a number';
+            }
+        }
+        @else {
+            @warn 'The breakpoint `#{$from-breakpoint}` could not be found in the `$breakpoints` parameter';
+        }
+        // Until breakpoint
+        @if type-of($until-breakpoint) == 'number' {
+            @if $safari <= 16.3 or $safari-ios <= 16.3 {
+                $media-features: $media-features + ' and (max-width: ' + px2em($until-breakpoint) + ')'; // Safari 16.3-, Safari iOS 16.3-
+            }
+            @else {
+                $media-features: $media-features + ' width <= ' + px2em($until-breakpoint) + ')';
+            }
+        }
+        @else if map-has-key($breakpoints, $until-breakpoint) {
+            $value: map-get($breakpoints, $until-breakpoint);
+            @if type-of($value) == 'number' {
+                @if $safari <= 16.3 or $safari-ios <= 16.3 {
+                    $media-features: $media-features + ' and (max-width: ' + px2em($value) + ')'; // Safari 16.3-, Safari iOS 16.3-
+                }
+                @else {
+                    $media-features: $media-features + ' width <= ' + px2em($value) + ')';
+                }
+            }
+            @else {
+                @warn 'The value of the breakpoint `#{$until-breakpoint}` is not a number';
+            }
+        }
+        @else {
+            @warn 'The breakpoint `#{$until-breakpoint}` could not be found in the `$breakpoints` parameter';
+        }
+    }
+    
+    // Other cases
+    @else {
+        // From breakpoint
+        @if ($from-breakpoint) {
+            $media-features: $media-features + '(min-width: ';
+            @if type-of($from-breakpoint) == 'number' {
+                $media-features: $media-features + px2em($from-breakpoint);
+            }
+            @else if map-has-key($breakpoints, $from-breakpoint) {
+                $value: map-get($breakpoints, $from-breakpoint);
+                @if type-of($value) == 'number' {
+                    $media-features: $media-features + px2em($value);
+                }
+                @else {
+                    @warn 'The value of the breakpoint `#{$from-breakpoint}` is not a number';
+                }
+            }
+            @else {
+                @warn 'The breakpoint `#{$from-breakpoint}` could not be found in the `$breakpoints` parameter';
+            }
+            $media-features: $media-features + ')';
+        }
+        // Until breakpoint
+        @if ($until-breakpoint) {
+            @if str-length($media-features) != 0 {
+                $media-features: $media-features + ' and ';
+            }
+            $media-features: $media-features + '(max-width: ';
+            @if type-of($until-breakpoint) == 'number' {
+                $media-features: $media-features + px2em($until-breakpoint);
+            }
+            @else if map-has-key($breakpoints, $until-breakpoint) {
+                $value: map-get($breakpoints, $until-breakpoint);
+                @if type-of($value) == 'number' {
+                    $media-features: $media-features + px2em($value);
+                }
+                @else {
+                    @warn 'The value of the breakpoint `#{$until-breakpoint}` is not a number';
+                }
+            }
+            @else {
+                @warn 'The breakpoint `#{$until-breakpoint}` could not be found in the `$breakpoints` parameter';
+            }
+            $media-features: $media-features + ')';
+        }
+        // Fixed breakpoint
+        @if ($fixed-breakpoint) {
+            @if str-length($media-features) != 0 {
+                $media-features: $media-features + ' and ';
+            }
+                $media-features: $media-features + '(width: ';
+            @if type-of($fixed-breakpoint) == 'number' {
+                $media-features: $media-features + px2em($fixed-breakpoint);
+            }
+            @else if map-has-key($breakpoints, $fixed-breakpoint) {
+                $value: map-get($breakpoints, $fixed-breakpoint);
+                @if type-of($value) == 'number' {
+                    $media-features: $media-features + px2em($value);
+                }
+                @else {
+                    @warn 'The value of the breakpoint `#{$fixed-breakpoint}` is not a number';
+                }
+            }
+            @else {
+                @warn 'The breakpoint `#{$fixed-breakpoint}` could not be found in the `$breakpoints` parameter';
+            }
+            $media-features: $media-features + ')';
+        }
+        // Other media features
+        @if ($other-media-features) {
+            @if str-length($media-features) != 0 {
+                $media-features: $media-features + ' and ';
+            }
+            $media-features: $media-features + $other-media-features;
+        }
+    }
+
+    // One or several media types declared
+    @if $media-types != 'all' {
+        // Several media types are declared
+        @if type-of($media-types) == 'list' {
+            // If the $and parameter is evaluated to true
+            @if $and {
+                // If the $and parameter is evaluated to true, media features are expected not to be empty
+                @if str-length($media-features) != 0 {
+                    @each $media-type in $media-types {
+                        // If the current list item is the first one, its value is just added to the variable
+                        @if index($media-types, $media-type) > 1 {
+                            $media-queries: $media-queries + ', ';
+                        }
+                        $media-queries: $media-queries + $media-type + ' and ' + $media-features;
+                    }
+                }
+                // Otherwise, the media query cannot be parsed
+                @else {
+                    @warn 'It is impossible to target different media types at the same time';
+                }
+            }
+            // Otherwise, each value is comma-separated
+            @else {
+                @each $media-type in $media-types {
+                    // If the current list item is the first one, its value is just added to the variable
+                    @if index($media-types, $media-type) > 1 {
+                        $media-queries: $media-queries + ', ';
+                    }
+                    $media-queries: $media-queries + $media-type;
+                }
+            }
+        }
+        @else if str-length($media-features) != 0 {
+            $media-queries: $media-queries + $media-types + ' and ' + $media-features;
+        }
+        @else {
+            $media-queries: $media-queries + $media-types;
+        }
+    }
+    // No media types declared, but one or several media features
+    @else if str-length($media-features) {
+        $media-queries: $media-features;
+    }
+    // Media all
+    @else {
+        $media-queries: $media-types;
+    }
+
+    // Rules are generated within the `@media` rule (provided the `$media-queries` string is not empty)
+    @if str-length($media-queries) != 0 {
+        @media #{$media-queries} {
+            @content;
+        }
+    }
+    @else {
+        @warn 'The `@media` rule could not have been generated';
+    }
+}
+
+/// Mixin show breakpoints (for development and debugging purposes)
+///
+/// @param {List} $breakpoints-to-show [$show-media-queries-breakpoints] - List of the breakpoints to show
+/// @param {Map} $breakpoints [$media-queries-breakpoints] - Map of the breakpoints with their values in pixels (without any unit)
+///
+/// @requires {Variable} $show-media-queries-breakpoints
+/// @requires {Variable} $media-queries-breakpoints
+/// @requires {Function} px2em
+/// @requires {Mixin} css-media-queries
+///
+/// @example scss
+/// @include show-css-media-queries ((medium, large), (small: 300, medium: 700, large: 800));
+@mixin show-css-media-queries ($breakpoints-to-show: $show-media-queries-breakpoints, $breakpoints: $media-queries-breakpoints) {
+    html {
+        &::before {
+            font-family: Consolas, "Liberation Mono", Menlo, "Courier New", Courier, monospace;
+            color: white;
+            background: maroon;
+            padding: 0.5rem 1rem;
+            border-bottom: 1px solid #ff8282;
+            border-left: 1px solid #ff8282;
+            position: fixed;
+            top: 0;
+            right: 0;
+            z-index: 100;
+            @each $breakpoint in $breakpoints-to-show {
+                @if map-has-key($breakpoints, $breakpoint) {
+                    $width: map-get($breakpoints, $breakpoint);
+                    @if type-of($width) != 'number' {
+                        @warn 'The value of the breakpoint called “#{$breakpoint}” is not a number';
+                    }
+                    @include css-media-queries ($from-breakpoint: $width) {
+                        content: "#{$breakpoint} ≥ #{$width}px (#{px2em($width)})";
+                    }
+                }
+                @else {
+                    @warn 'The breakpoint called “#{$breakpoint}” has not been found in `$breakpoints`';
+                }
+            }
+        }
+    }
+}
+
+/// Mixin `text-size-adjust` property
+///
+/// @param {Number (unit) | String} $value [auto] - The value of the CSS property
+///
+/// @requires $firefox-android
+/// @requires $safari-ios
+///
+/// @example scss
+/// .element {
+///     @include css-text-size-adjust (100%);
+/// }
+@mixin css-text-size-adjust ($value: auto) {
+    @if $safari-ios <= 16.4 {
+        -webkit-text-size-adjust: $value; // Safari iOS 16.4-
+    }
+    @if $firefox-android <= 100 {
+        -moz-text-size-adjust: $value; // Firefox Android 110-
+    }
+    text-size-adjust: $value;
+}
+
+/// Mixin `hyphens` property
+///
+/// @param {String} $value [manual] - The value of the CSS property
+///
+/// @requires $safari
+/// @requires $safari-ios
+///
+/// @example scss
+/// .element {
+///     @include css-hyphens (auto);
+/// }
+@mixin css-hyphens ($value: manual) {
+    @if $value == none {
+        overflow-wrap: normal;
+    }
+    @else {
+        overflow-wrap: break-word;
+    }
+    @if $safari <= 16.4 or $safari-ios <= 16.4 {
+        -webkit-hyphens: $value; // Safari 16.4-, Safari iOS 16.4-
+    }
+    hyphens: $value;
+}
+
+/// Mixin to visually hide an element without hiding it to assistive technologies
+///
+/// @example scss
+/// .element {
+///     @include css-visually-hidden;
+/// }
+@mixin css-visually-hidden {
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(1px, 1px, 1px, 1px);
+    position: absolute;
+}

@@ -1,0 +1,165 @@
+@charset "utf-8";
+
+/** @section Social proof */
+
+.social-proof {
+    article {
+        color: var(--neutral-tertiary);
+        background: var(--primary);
+        padding: 3.8rem 3.2rem 3.4rem;
+        margin-top: var(--insert-margin);
+        border-radius: var(--rounded-corners);
+    }
+    blockquote {
+        p {
+            quotes: "“" "”";
+            &::before {
+                content: open-quote;
+            }
+            &::after {
+                content: close-quote;
+            }
+        }
+    }
+    > p {
+        color: var(--neutral-primary);
+        text-align: center;
+    }
+    .title {
+        font-size: var(--title-text);
+        line-height: 1;
+        font-weight: bold;
+        color: var(--primary);
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+    .rates {
+        font-weight: bold;
+        color: var(--primary);
+        text-align: center;
+        list-style: none;
+        margin: 4.2rem 0 4.9rem;
+        li {
+            background: var(--neutral-secondary);
+            padding: 1.4rem;
+            margin-top: var(--insert-margin);
+            border-radius: var(--rounded-corners);
+        }
+        span {
+            display: block;
+            margin-bottom: 1.2rem;
+        }
+    }
+    .testimonial-title {
+        font-size: inherit;
+        font-family: var(--font-medium);
+        margin-bottom: 2.4rem;
+        overflow-y: hidden;
+        img {
+            margin-right: 2rem;
+            border-radius: var(--rounded-photo);
+            float: left;
+        }
+        span {
+            display: block;
+        }
+        .status {
+            font-family: var(--font);
+            font-weight: normal;
+            color: var(--secondary);
+        }
+    }
+    @mixin stair-alignment {
+        &:first-child {
+            align-self: flex-start;
+        }
+        &:last-child {
+            align-self: flex-end;
+        }
+    }
+    @include css-media-queries ($from-breakpoint: desktop) {
+        display: grid;
+        grid-template: repeat(3, auto) / repeat(2, 1fr);
+        grid-template-areas: "title rates"
+                             "intro rates"
+                             ". .";
+        gap: var(--horizontal-gutter) var(--vertical-gutter);
+        max-width: var(--container-max-width);
+        margin: 0 auto;
+        > p,
+        .title {
+            text-align: initial;
+        }
+        > p {
+            grid-area: intro;
+        }
+        .title {
+            --title-text: 4.4rem;
+            grid-area: title;
+            margin-bottom: 0;
+        }
+        .rates {
+            text-align: initial;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-end;
+            gap: var(--horizontal-gutter);
+            grid-area: rates;
+            margin: 0;
+            li {
+                width: 44.4rem;
+                padding-right: 3rem;
+                padding-left: 3rem;
+                margin-top: 0;
+                box-sizing: border-box;
+            }
+            span {
+                display: initial;
+                margin-right: 3rem;
+                margin-bottom: 0;
+            }
+        }
+        .testimonials {
+            display: flex;
+            gap: var(--vertical-gutter);
+            grid-column: 1 / -1;
+            article {
+                margin-top: 0;
+            }
+        }
+    }
+    @include css-media-queries ($from-breakpoint: wide) {
+        max-width: var(--container-max-width);
+        margin: 0 auto;
+        > p {
+            margin-right: 13rem;
+            margin-bottom: 5rem;
+        }
+        .title {
+            --title-text: 4.4rem;
+            grid-area: title;
+            margin-right: 20rem;
+            margin-bottom: 0;
+        }
+        .rates li,
+        .testimonials article {
+            @include stair-alignment;
+        }
+        .rates {
+            align-items: center;
+            li {
+                max-width: 44.4rem;
+                width: auto;
+            }
+        }
+        .testimonials {
+            align-items: center;
+            min-height: 27.6rem;
+            article {
+                min-height: 23.4rem;
+                box-sizing: border-box;
+            }
+        }
+    }
+}

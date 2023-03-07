@@ -1,0 +1,28 @@
+@charset "utf-8";
+
+/** @section General layout */
+
+body {
+    font-size: var(--normal-text);
+}
+main {
+    background: url("images/bg-pattern-top-mobile.svg") no-repeat top left, var(--neutral-tertiary) url("images/bg-pattern-bottom-mobile.svg") no-repeat bottom left;
+    background-size: auto, contain;
+    padding: 7.2rem 2.4rem;
+    @include css-media-queries ($from-breakpoint: desktop-background) {
+        background-image: url("images/bg-pattern-top-desktop.svg"), url("images/bg-pattern-bottom-desktop.svg");
+        background-position: top left, bottom right;
+    }
+    @include css-media-queries ($from-breakpoint: wide) {
+        padding: 10rem 0;
+    }
+}
+.attribution {
+    font-size: 1.1rem;
+    color: var(--neutral-tertiary);
+    background: var(--primary);
+    padding: 3.2rem 2.4rem;
+    a {
+        color: inherit;
+    }
+}
